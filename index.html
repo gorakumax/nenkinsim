@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>年金繰上げ・繰下げ損益シミュレーター</title>
+<!-- マニフェストの読み込み -->
+<link rel="manifest" href="manifest.json">
+<!-- サービスワーカーの登録 -->
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js');
+  }
+</script>
     <style>
         /* 全体のデザイン */
         body {
