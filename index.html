@@ -4,14 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>年金繰上げ・繰下げ損益シミュレーター</title>
-<!-- マニフェストの読み込み -->
-<link rel="manifest" href="manifest.json">
-<!-- サービスワーカーの登録 -->
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js');
-  }
-</script>
     <style>
         /* 全体のデザイン */
         body {
@@ -28,7 +20,7 @@
             text-align: center;
             color: #2c3e50;
             font-size: 1.2rem;
-            margin-bottom: 20px;
+            margin-bottom: 5px;
         }
 
         /* 入力エリアのカード */
@@ -163,12 +155,19 @@
             color: #888;
             margin-top: 10px;
         }
+        .note2 {
+            font-size: 0.75rem;
+            color: #888;
+	    text-align: center;
+            margin-top: 1px;
+        }
     </style>
+
 </head>
 <body>
 
     <h2>年金受給額シミュレーター</h2>
-
+<p class="note2"><a href="how2use.html">シミュレーターの使い方</a></p>
     <div class="card">
         <div class="input-group">
             <!-- 基本額：フル幅 -->
