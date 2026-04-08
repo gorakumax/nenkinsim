@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="common/style.css">
-    <script src="common/common.js" defer></script>
+    <link rel="stylesheet" href="/common/style.css">
+    <script src="/common/common.js" defer></script>
     <title>年金繰上げ・繰下げ損益シミュレーター</title>
     <style>
         /* 全体のデザイン */
@@ -167,6 +167,17 @@
 
 </head>
 <body>
+<div id="menu-trigger" onclick="toggleNav()">
+    <span></span>
+    <span class="menu-text">Menu</span>
+    <span></span>
+</div>
+
+<nav id="side-nav">
+    <div data-include="common/topmenubar.html"></div>
+</nav>
+
+<div id="nav-overlay" onclick="toggleNav()"></div>
 
     <h2>年金受給額シミュレーター</h2>
 <p class="note2"><a href="how2use.html">シミュレーターの使い方</a></p>
