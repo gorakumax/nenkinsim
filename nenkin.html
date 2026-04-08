@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>年金繰上げ・繰下げ損益シミュレーター</title>
+    <style>
+        /* 全体のデザイン */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f7f9;
+        }
+
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+        /* 入力エリアのカード */
+        .card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        /* --- 入力レイアウトの修正箇所 --- */
+        .input-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .item-full {
+            width: 100%; /* 基本額を1行に */
+        }
+
+        .item-half {
+            flex: 1; /* 年齢とヶ月を横並びに */
+            min-width: 45%; /* スマホで並びを維持 */
+        }
+        /* ------------------------------ */
+
+        .input-item label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #666;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            background-color: #fff;
+            color: #333;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cpath fill='%23666' d='M0 2l4 4 4-4z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 12px;
+            padding-right: 30px;
+        }
+
+        input:focus, select:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        /* 結果表示エリア */
+        .result-summary {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            background: #eef2f7;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .result-item .val {
+            display: block;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .result-item .unit {
+            font-size: 0.75rem;
+            color: #777;
+        }
+
+        /* テーブルのデザイン */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        table {
+            width: 100%;
+            min-width: 700px;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th, td {
+            padding: 12px 8px;
+            border-bottom: 1px solid #f0f0f0;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .age-col {
+            position: sticky;
+            left: 0;
+            background-color: #fff;
+            font-weight: bold;
+            border-right: 2px solid #eee;
+            z-index: 10;
+            white-space: nowrap;
+        }
+
+        .plus { color: #d32f2f; font-weight: bold; }
+        .minus { color: #1976d2; }
+        .current-row { background-color: #fff9c4 !important; }
+        .current-row .age-col { background-color: #fff9c4 !important; color: #d32f2f; }
+
+        .note {
+            font-size: 0.75rem;
+            color: #888;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>年金受給額シミュレーター</h2>
+
+    <div class="card">
+        <div class="input-group">
+            <!-- 基本額：フル幅 -->
+            <div class="input-item item-full">
+                <label>基本額(65歳/年額)</label>
+                <input type="number" id="b3" value="1500000" step="10000" min="0">
+            </div>
+            
+            <!-- 年齢：半分幅 -->
+            <div class="input-item item-half">
+                <label>受給開始（年齢）</label>
+                <select id="b5">
+                    <option value="60">60歳</option>
+                    <option value="61">61歳</option>
+                    <option value="62">62歳</option>
+                    <option value="63">63歳</option>
+                    <option value="64">64歳</option>
+                    <option value="65" selected>65歳</option>
+                    <option value="66">66歳</option>
+                    <option value="67">67歳</option>
+                    <option value="68">68歳</option>
+                    <option value="69">69歳</option>
+                    <option value="70">70歳</option>
+                    <option value="71">71歳</option>
+                    <option value="72">72歳</option>
+                    <option value="73">73歳</option>
+                    <option value="74">74歳</option>
+                    <option value="75">75歳</option>
+                </select>
+            </div>
+            
+            <!-- ヶ月：半分幅 -->
+            <div class="input-item item-half">
+                <label>（ヶ月）</label>
+                <select id="b7">
+                    <option value="0" selected>0ヶ月</option>
+                    <option value="1">1ヶ月</option>
+                    <option value="2">2ヶ月</option>
+                    <option value="3">3ヶ月</option>
+                    <option value="4">4ヶ月</option>
+                    <option value="5">5ヶ月</option>
+                    <option value="6">6ヶ月</option>
+                    <option value="7">7ヶ月</option>
+                    <option value="8">8ヶ月</option>
+                    <option value="9">9ヶ月</option>
+                    <option value="10">10ヶ月</option>
+                    <option value="11">11ヶ月</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="result-summary">
+            <div class="result-item">
+                <span class="unit">増減率</span>
+                <span class="val"><span id="res_rate">0</span>%</span>
+            </div>
+            <div class="result-item">
+                <span class="unit">受給年額</span>
+                <span class="val"><span id="res_yearly">0</span>円</span>
+            </div>
+            <div class="result-item">
+                <span class="unit">受給月額</span>
+                <span class="val"><span id="res_monthly">0</span>円</span>
+            </div>
+        </div>
+        <p class="note">※65歳を基準とした累積受給額の差を表示しています。</p>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th class="age-col">開始＼生存</th>
+                    <th>65歳</th>
+                    <th>70歳</th>
+                    <th>75歳</th>
+                    <th>80歳</th>
+                    <th>85歳</th>
+                    <th>90歳</th>
+                    <th>95歳</th>
+                    <th>100歳</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+
+    <script>
+        const inputs = ['b3', 'b5', 'b7'];
+        inputs.forEach(id => {
+            const el = document.getElementById(id);
+            const eventType = el.tagName === 'SELECT' ? 'change' : 'input';
+            el.addEventListener(eventType, calculate);
+        });
+
+        function calculate() {
+            const elB3 = document.getElementById('b3');
+            const elB5 = document.getElementById('b5');
+            const elB7 = document.getElementById('b7');
+
+            let B3 = parseFloat(elB3.value) || 0;
+            let B5 = parseFloat(elB5.value) || 65;
+            let B7 = parseFloat(elB7.value) || 0;
+
+            if (B3 < 0) { B3 = 0; elB3.value = 0; }
+
+            let rate = 0;
+            const totalMonthsDiff = (B5 - 65) * 12 + B7;
+
+            if (totalMonthsDiff < 0) {
+                rate = totalMonthsDiff * 0.4;
+            } else {
+                rate = totalMonthsDiff * 0.7;
+            }
+
+            const yearly = B3 * (1 + rate / 100);
+            const monthly = yearly / 12;
+
+            document.getElementById('res_rate').innerText = rate.toFixed(1);
+            document.getElementById('res_yearly').innerText = Math.round(yearly).toLocaleString();
+            document.getElementById('res_monthly').innerText = Math.round(monthly).toLocaleString();
+
+            updateTable(B3, B5, B7);
+        }
+
+        function updateTable(baseAmount, inputAge, inputMonth) {
+            const checkAges = [65, 70, 75, 80, 85, 90, 95, 100];
+            const defaultStarts = [60, 65, 70, 75];
+            const currentStart = inputAge + (inputMonth / 12);
+            
+            let startAges = [...defaultStarts];
+            if (!startAges.some(a => Math.abs(a - currentStart) < 0.001)) {
+                startAges.push(currentStart);
+            }
+            startAges.sort((a, b) => a - b);
+
+            let html = '';
+            startAges.forEach(startAge => {
+                const displayYear = Math.floor(startAge);
+                const displayMonth = Math.round((startAge - displayYear) * 12);
+                let ageLabel = `${displayYear}歳`;
+                if (displayMonth > 0) ageLabel += `${displayMonth}ヶ月`;
+
+                const totalMonthsDiff = Math.round((startAge - 65) * 12);
+                const startRate = totalMonthsDiff < 0 ? totalMonthsDiff * 0.4 : totalMonthsDiff * 0.7;
+                const yearlyAmount = baseAmount * (1 + startRate / 100);
+                
+                const isCurrentRow = (Math.abs(startAge - currentStart) < 0.001);
+                html += `<tr class="${isCurrentRow ? 'current-row' : ''}">`;
+                html += `<td class="age-col">${ageLabel}</td>`;
+                
+                checkAges.forEach(checkAge => {
+                    const yearsReceived = Math.max(0, checkAge - startAge);
+                    const total = yearlyAmount * yearsReceived;
+                    const standardTotal = baseAmount * (Math.max(0, checkAge - 65));
+                    const diff = total - standardTotal;
+                    
+                    let diffClass = diff > 0 ? 'plus' : (diff < 0 ? 'minus' : '');
+                    let diffText = diff === 0 ? "±0" : (diff > 0 ? "+" : "") + Math.round(diff/10000).toLocaleString() + "万";
+                    
+                    html += `<td class="${diffClass}">${diffText}</td>`;
+                });
+                html += `</tr>`;
+            });
+
+            document.getElementById('tableBody').innerHTML = html;
+        }
+
+        calculate(); // 初期実行
+    </script>
+</body>
+</html>
